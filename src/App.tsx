@@ -35,7 +35,7 @@ export default function App() {
       case 12:
         return 104 / 12;
       case 13:
-        return 110 / 13;
+        return 111 / 13;
       default:
         // Solo por exhaustividad de TypeScript; la UI solo permite 2–13.
         return 12;
