@@ -10,9 +10,36 @@ import { motion, AnimatePresence } from 'motion/react';
 export default function App() {
   const [units, setUnits] = useState(2);
 
-  const getMultiplier = (units: number): number => {
-    // Baja lineal desde 10 (en 2 uds) hasta 8 (en 10 uds)
-    return 10 - (2 / 8) * (units - 2);
+  const getMultiplier = (u: number): number => {
+    switch (u) {
+      case 2:
+        return 12;
+      case 3:
+        return 34 / 3;
+      case 4:
+        return 10.75;
+      case 5:
+        return 10.2;
+      case 6:
+        return 59 / 6;
+      case 7:
+        return 66 / 7;
+      case 8:
+        return 73 / 8;
+      case 9:
+        return 80 / 9;
+      case 10:
+        return 8.6;
+      case 11:
+        return 92 / 11;
+      case 12:
+        return 98 / 12;
+      case 13:
+        return 8;
+      default:
+        // Solo por exhaustividad de TypeScript; la UI solo permite 2–13.
+        return 12;
+    }
   };
 
   const totalPrice = useMemo(() => {
@@ -21,7 +48,7 @@ export default function App() {
   }, [units]);
 
   const increment = () => {
-    if (units < 10) setUnits(prev => prev + 1);
+    if (units < 13) setUnits(prev => prev + 1);
   };
 
   const decrement = () => {
@@ -61,7 +88,7 @@ export default function App() {
           <div className="flex flex-col items-center min-h-[220px]">
             <button
               onClick={increment}
-              disabled={units >= 10}
+              disabled={units >= 13}
               className={`p-4 -m-2 rounded-full ${theme.hover} transition-colors disabled:opacity-20 flex items-center justify-center shrink-0`}
               aria-label="Aumentar unidades"
             >
