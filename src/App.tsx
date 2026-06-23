@@ -3,52 +3,38 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { ChevronUp, ChevronDown, MessageCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+
+const PRICING: Record<number, { unitPrice: number; totalPrice: number }> = {
+  2: { unitPrice: 15, totalPrice: 30 },
+  3: { unitPrice: 14, totalPrice: 42 },
+  4: { unitPrice: 13, totalPrice: 52 },
+  5: { unitPrice: 12, totalPrice: 60 },
+  6: { unitPrice: 11.75, totalPrice: 70.5 },
+  7: { unitPrice: 11.5, totalPrice: 80.5 },
+  8: { unitPrice: 11, totalPrice: 88 },
+  9: { unitPrice: 10.5, totalPrice: 94.5 },
+  10: { unitPrice: 10, totalPrice: 100 },
+};
+
+const formatTotalMil = (total: number): string => {
+  if (total % 1 === 0) {
+    return `${total}.000`;
+  }
+  const [integer, decimal] = total.toFixed(2).split('.');
+  return `${integer}.${decimal.padEnd(3, '0')}`;
+};
 
 export default function App() {
   const [units, setUnits] = useState(2);
 
-  const getMultiplier = (u: number): number => {
-    switch (u) {
-      case 2:
-        return 12;
-      case 3:
-        return 11;
-      case 4:
-        return 10.5;
-      case 5:
-        return 10;
-      case 6:
-        return 58 / 6;
-      case 7:
-        return 66 / 7;
-      case 8:
-        return 74 / 8;
-      case 9:
-        return 82 / 9;
-      case 10:
-        return 9;
-      case 11:
-        return 97 / 11;
-      case 12:
-        return 104 / 12;
-      case 13:
-        return 111 / 13;
-      default:
-        // Solo por exhaustividad de TypeScript; la UI solo permite 2–13.
-        return 12;
-    }
-  };
-
-  const totalPrice = useMemo(() => {
-    const multiplier = getMultiplier(units);
-    return Math.round(units * multiplier);
-  }, [units]);
+  const totalPrice = PRICING[units].totalPrice;
+  const formattedTotal = formatTotalMil(totalPrice);
 
   const increment = () => {
-    if (units < 13) setUnits(prev => prev + 1);
+    if (units < 10) setUnits(prev => prev + 1);
   };
 
   const decrement = () => {
@@ -56,7 +42,6 @@ export default function App() {
   };
 
   const handleWhatsAppClick = () => {
-    const formattedTotal = `${totalPrice}.000`;
     const message = `*Unidades:* ${units}\n*Total:* ${formattedTotal}`;
     const encodedMessage = encodeURIComponent(message);
     window.open(`https://wa.me/?text=${encodedMessage}`, '_blank', 'noopener,noreferrer');
@@ -88,7 +73,7 @@ export default function App() {
           <div className="flex flex-col items-center min-h-[220px]">
             <button
               onClick={increment}
-              disabled={units >= 13}
+              disabled={units >= 10}
               className={`p-4 -m-2 rounded-full ${theme.hover} transition-colors disabled:opacity-20 flex items-center justify-center shrink-0`}
               aria-label="Aumentar unidades"
             >
@@ -122,14 +107,14 @@ export default function App() {
           <div className="flex flex-col items-center justify-center min-h-[220px] relative">
             <AnimatePresence initial={false}>
               <motion.div
-                key={totalPrice}
+                key={formattedTotal}
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 1.1 }}
                 transition={{ duration: 0.15 }}
-                className={`text-7xl font-light ${theme.accent} absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2`}
+                className={`text-5xl font-light ${theme.accent} absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 whitespace-nowrap`}
               >
-                {totalPrice}
+                {formattedTotal}
               </motion.div>
             </AnimatePresence>
           </div>
@@ -141,12 +126,6 @@ export default function App() {
           <div className="flex items-end justify-center pt-1">
             <span className={`text-[10px] uppercase tracking-widest ${theme.muted} font-sans`}>Valor Total</span>
           </div>
-        </div>
-
-        <div className="text-center mb-12">
-          <p className={`${theme.muted} italic text-sm tracking-wide`}>
-            Eficiencia por cantidad: + es -
-          </p>
         </div>
 
         <div className="flex justify-center">
